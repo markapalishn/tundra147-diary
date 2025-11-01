@@ -146,8 +146,44 @@
     
     // Создание календаря
     const calendarList = document.getElementById('calendarList');
+    const calendarNav = document.getElementById('calendarNav');
     const toggleButtons = document.querySelectorAll('.toggle-btn');
+    const calendarToggleBtn = document.getElementById('calendarToggleBtn');
     let currentMode = 'days';
+
+    // Управление показом/скрытием календаря на мобильных
+    if (calendarToggleBtn && calendarNav) {
+        calendarToggleBtn.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                calendarNav.classList.toggle('open');
+                calendarToggleBtn.classList.toggle('active');
+            }
+        });
+
+        // Закрытие календаря при клике вне его области (только на мобильных)
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth <= 768 && 
+                calendarNav.classList.contains('open') && 
+                !calendarNav.contains(event.target) && 
+                !calendarToggleBtn.contains(event.target)) {
+                calendarNav.classList.remove('open');
+                calendarToggleBtn.classList.remove('active');
+            }
+        });
+    }
+    
+    // Обработка изменения размера окна
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            if (window.innerWidth > 768) {
+                // На десктопе календарь всегда виден
+                if (calendarNav) calendarNav.classList.remove('open');
+                if (calendarToggleBtn) calendarToggleBtn.classList.remove('active');
+            }
+        }, 100);
+    });
     
     // Сбор уникальных дат и дней
     const datesMap = new Map();
